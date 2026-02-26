@@ -34,4 +34,11 @@ public static class Const {
     public const int MaxPlayers = 2;
 
     #endregion
+
+    #region Scenes
+
+    public const string MenuSceneName = "MenuScene";
+    public const string GameSceneName = "GameScene";
+
+    #endregion
 }
