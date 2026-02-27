@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class NetworkManagerUI : MonoBehaviour {
     #region UI References
-
     [Header("Buttons")]
     [Tooltip("Button to start hosting a game")]
     [SerializeField] private Button hostButton;
@@ -21,11 +20,9 @@ public class NetworkManagerUI : MonoBehaviour {
     [Header("Status")]
     [Tooltip("Text displaying connection status")]
     [SerializeField] private TextMeshProUGUI statusText;
-
     #endregion
 
     #region Unity Callbacks
-
     private void Start() {
         hostButton.onClick.AddListener(HandleHostClicked);
         joinButton.onClick.AddListener(HandleJoinClicked);
@@ -34,7 +31,7 @@ public class NetworkManagerUI : MonoBehaviour {
         NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnected;
 
         ipInputField.text = "127.0.0.1";
-        SetStatus("Enter IP then","Host or Join.");
+        SetStatus("Enter IP then", "Host or Join.");
     }
 
     private void OnDestroy() {
@@ -43,11 +40,9 @@ public class NetworkManagerUI : MonoBehaviour {
         NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnected;
     }
-
     #endregion
 
     #region Button Handlers
-
     private void HandleHostClicked() {
         SetButtonsInteractable(false);
         SetStatus("Starting host...");
@@ -77,11 +72,9 @@ public class NetworkManagerUI : MonoBehaviour {
 
         SetStatus("Connecting to:", $"{ip}:{Const.DefaultPort}...");
     }
-
     #endregion
 
     #region Network Callbacks
-
     private void HandleClientConnected(ulong clientId) {
         GameEvents.OnClientConnected?.Invoke(clientId);
 
@@ -106,19 +99,15 @@ public class NetworkManagerUI : MonoBehaviour {
         int connectedPlayers = NetworkManager.Singleton.ConnectedClientsIds.Count;
         SetStatus("Player disconnected.", $"Players: {connectedPlayers}/{Const.MaxPlayers}");
     }
-
     #endregion
 
     #region Scene Management
-
     private void LoadGameScene() {
         NetworkManager.Singleton.SceneManager.LoadScene(Const.GameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
-
     #endregion
 
     #region UI Helpers
-
     private void SetStatus(string message) {
         statusText.text = message;
     }
@@ -132,6 +121,5 @@ public class NetworkManagerUI : MonoBehaviour {
         joinButton.interactable = interactable;
         ipInputField.interactable = interactable;
     }
-
     #endregion
 }
