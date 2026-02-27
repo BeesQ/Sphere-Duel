@@ -15,6 +15,10 @@ public static class Const {
     public const float ArenaHalfHeight = 4.5f;
     #endregion
 
+    #region Spawn
+    public const float SpawnOffsetX = 6f;
+    #endregion
+
     #region Game
     public const int ScoreToWin = 3;
     public const float RespawnDelay = 2f;
