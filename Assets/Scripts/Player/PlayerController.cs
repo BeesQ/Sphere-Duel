@@ -98,8 +98,12 @@ public class PlayerController : NetworkBehaviour {
 
     #region Validation
     private void ValidateReferences() {
-        if (rb == null) Debug.LogError($"[{nameof(PlayerController)}] Rigidbody2D is not assigned!", this);
-        if (networkTransform == null) Debug.LogError($"[{nameof(PlayerController)}] NetworkTransform is not assigned!", this);
+        bool isValid = true;
+
+        if (rb == null) { Debug.LogError($"[{nameof(PlayerController)}] Rigidbody2D is not assigned!", this); isValid = false; }
+        if (networkTransform == null) { Debug.LogError($"[{nameof(PlayerController)}] NetworkTransform is not assigned!", this); isValid = false; }
+
+        if (!isValid) enabled = false;
     }
     #endregion
 }
