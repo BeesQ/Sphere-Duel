@@ -6,11 +6,13 @@ using UnityEngine;
 public class PlayerHealth : NetworkBehaviour {
     #region References
     [Header("References")]
-    [Tooltip("SpriteRenderer on the Sprite child (hidden on death)")]
-    [SerializeField] private SpriteRenderer visualSpriteRenderer;
+    [Tooltip("CircleCollider2D on the Sprite child (disabled on death)")]
+    [SerializeField] private CircleCollider2D hitCollider;
 
     [Tooltip("NetworkTransform for teleporting on respawn")]
     [SerializeField] private NetworkTransform networkTransform;
+
+    private SpriteRenderer[] allRenderers;
     #endregion
 
     #region Network Variables
@@ -23,6 +25,13 @@ public class PlayerHealth : NetworkBehaviour {
 
     #region Properties
     public bool IsAlive { get; private set; } = true;
+    #endregion
+
+    #region Unity Callbacks
+    private void Awake() {
+        allRenderers = GetComponentsInChildren<SpriteRenderer>();
+        ValidateReferences();
+    }
     #endregion
 
     #region Network Callbacks
@@ -65,8 +74,7 @@ public class PlayerHealth : NetworkBehaviour {
     [ClientRpc]
     private void HandleDeathClientRpc() {
         IsAlive = false;
-        visualSpriteRenderer.enabled = false;
-        gameObject.SetActive(false);
+        SetVisuals(false);
         GameEvents.OnPlayerDied?.Invoke(OwnerClientId);
     }
 
@@ -76,30 +84,39 @@ public class PlayerHealth : NetworkBehaviour {
         currentHealth.Value = GameManager.Instance.PlayerMaxHealth;
 
         float xPosition = OwnerClientId == 0 ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
-        networkTransform.Teleport(new Vector3(xPosition, 0f, 0f), Quaternion.identity, transform.localScale);
+        Vector3 spawnPosition = new Vector3(xPosition, 0f, 0f);
 
-        HandleRespawnClientRpc();
+        HandleRespawnClientRpc(spawnPosition);
     }
 
     [ClientRpc]
-    private void HandleRespawnClientRpc() {
+    private void HandleRespawnClientRpc(Vector3 spawnPosition) {
         IsAlive = true;
-        visualSpriteRenderer.enabled = true;
-        gameObject.SetActive(true);
+        SetVisuals(true);
+
+        if (IsOwner) {
+            networkTransform.Teleport(spawnPosition, Quaternion.identity, transform.localScale);
+        }
+
         GameEvents.OnPlayerRespawned?.Invoke(OwnerClientId);
+    }
+
+    private void SetVisuals(bool visible) {
+        foreach (SpriteRenderer renderer in allRenderers) {
+            renderer.enabled = visible;
+        }
+
+        hitCollider.enabled = visible;
     }
     #endregion
 
     #region Validation
-    private void Awake() {
-        ValidateReferences();
-    }
-
     private void ValidateReferences() {
         bool isValid = true;
 
-        if (visualSpriteRenderer == null) { Debug.LogError($"[{nameof(PlayerHealth)}] SpriteRenderer is not assigned!", this); isValid = false; }
+        if (hitCollider == null) { Debug.LogError($"[{nameof(PlayerHealth)}] CircleCollider2D is not assigned!", this); isValid = false; }
         if (networkTransform == null) { Debug.LogError($"[{nameof(PlayerHealth)}] NetworkTransform is not assigned!", this); isValid = false; }
+        if (allRenderers.Length == 0) { Debug.LogError($"[{nameof(PlayerHealth)}] No SpriteRenderers found in children!", this); isValid = false; }
 
         if (!isValid) enabled = false;
     }
