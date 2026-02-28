@@ -20,6 +20,12 @@ public class GameManager : MonoBehaviour {
     [Tooltip("Damage dealt per projectile hit (default from Const)")]
     [SerializeField] private float projectileDamage = Const.ProjectileDamage;
 
+    [Tooltip("Time in seconds before a projectile auto-despawns (default from Const)")]
+    [SerializeField] private float projectileLifetime = Const.ProjectileLifetime;
+
+    [Tooltip("Cooldown in seconds between shots (default from Const)")]
+    [SerializeField] private float fireCooldown = Const.FireCooldown;
+
     [Header("Game")]
     [Tooltip("Score needed to win the match")]
     [SerializeField] private int scoreToWin = Const.ScoreToWin;
@@ -33,6 +39,8 @@ public class GameManager : MonoBehaviour {
     public float PlayerMaxHealth => playerMaxHealth;
     public float ProjectileSpeed => projectileSpeed;
     public float ProjectileDamage => projectileDamage;
+    public float ProjectileLifetime => projectileLifetime;
+    public float FireCooldown => fireCooldown;
     public int ScoreToWin => scoreToWin;
     public float RespawnDelay => respawnDelay;
     #endregion

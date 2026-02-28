@@ -1,13 +1,14 @@
 public static class Const {
     #region Player
     public const float PlayerMoveSpeed = 5f;
-    public const float PlayerMaxHealth = 100f;
+    public const float PlayerMaxHealth = 5f;
     #endregion
 
     #region Projectile
     public const float ProjectileSpeed = 10f;
-    public const float ProjectileDamage = 20f;
+    public const float ProjectileDamage = 1f;
     public const float ProjectileLifetime = 3f;
+    public const float FireCooldown = 1f;
     #endregion
 
     #region Arena

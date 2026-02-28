@@ -12,6 +12,12 @@ public class PlayerController : NetworkBehaviour {
     [Tooltip("NetworkTransform component for syncing position/rotation")]
     [SerializeField] private NetworkTransform networkTransform;
 
+    [Tooltip("SpriteRenderer on the Sprite child (used for local sorting order)")]
+    [SerializeField] private SpriteRenderer visualSpriteRenderer;
+
+    [Tooltip("PlayerHealth component for alive state check")]
+    [SerializeField] private PlayerHealth playerHealth;
+
     private Camera mainCamera;
     #endregion
 
@@ -25,14 +31,14 @@ public class PlayerController : NetworkBehaviour {
     }
 
     private void Update() {
-        if (!IsOwner) return;
+        if (!IsOwner || !playerHealth.IsAlive) return;
 
         ReadInput();
         HandleRotation();
     }
 
     private void FixedUpdate() {
-        if (!IsOwner) return;
+        if (!IsOwner || !playerHealth.IsAlive) return;
 
         HandleMovement();
     }
@@ -43,6 +49,7 @@ public class PlayerController : NetworkBehaviour {
         if (!IsOwner) return;
 
         mainCamera = Camera.main;
+        visualSpriteRenderer.sortingOrder = 1;
         SetSpawnPosition();
     }
     #endregion
@@ -75,7 +82,8 @@ public class PlayerController : NetworkBehaviour {
 
     #region Rotation
     private void HandleRotation() {
-        if (mainCamera == null || Mouse.current == null) return;
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (Mouse.current == null) return;
 
         Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
@@ -102,6 +110,8 @@ public class PlayerController : NetworkBehaviour {
 
         if (rb == null) { Debug.LogError($"[{nameof(PlayerController)}] Rigidbody2D is not assigned!", this); isValid = false; }
         if (networkTransform == null) { Debug.LogError($"[{nameof(PlayerController)}] NetworkTransform is not assigned!", this); isValid = false; }
+        if (visualSpriteRenderer == null) { Debug.LogError($"[{nameof(PlayerController)}] SpriteRenderer is not assigned!", this); isValid = false; }
+        if (playerHealth == null) { Debug.LogError($"[{nameof(PlayerController)}] PlayerHealth is not assigned!", this); isValid = false; }
 
         if (!isValid) enabled = false;
     }

@@ -4,6 +4,7 @@ public static class GameEvents {
     #region Player
     public static Action<ulong> OnPlayerSpawned;
     public static Action<ulong> OnPlayerDied;
+    public static Action<ulong> OnPlayerRespawned;
     public static Action<ulong, float> OnPlayerHealthChanged;
     #endregion
 
