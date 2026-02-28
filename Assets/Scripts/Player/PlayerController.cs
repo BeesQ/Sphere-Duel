@@ -97,10 +97,11 @@ public class PlayerController : NetworkBehaviour {
 
     #region Spawn
     private void SetSpawnPosition() {
-        float xPosition = OwnerClientId == 0 ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
-        Vector3 spawnPosition = new Vector3(xPosition, 0f, 0f);
+        bool isHost = OwnerClientId == 0;
+        float xPosition = isHost ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
+        Quaternion spawnRotation = isHost ? Quaternion.identity : Quaternion.Euler(0f, 0f, 180f);
 
-        networkTransform.Teleport(spawnPosition, transform.rotation, transform.localScale);
+        networkTransform.Teleport(new Vector3(xPosition, 0f, 0f), spawnRotation, transform.localScale);
     }
     #endregion
 

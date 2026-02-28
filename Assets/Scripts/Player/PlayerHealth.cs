@@ -83,19 +83,21 @@ public class PlayerHealth : NetworkBehaviour {
 
         currentHealth.Value = GameManager.Instance.PlayerMaxHealth;
 
-        float xPosition = OwnerClientId == 0 ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
+        bool isHost = OwnerClientId == 0;
+        float xPosition = isHost ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
         Vector3 spawnPosition = new Vector3(xPosition, 0f, 0f);
+        Quaternion spawnRotation = isHost ? Quaternion.identity : Quaternion.Euler(0f, 0f, 180f);
 
-        HandleRespawnClientRpc(spawnPosition);
+        HandleRespawnClientRpc(spawnPosition, spawnRotation);
     }
 
     [ClientRpc]
-    private void HandleRespawnClientRpc(Vector3 spawnPosition) {
+    private void HandleRespawnClientRpc(Vector3 spawnPosition, Quaternion spawnRotation) {
         IsAlive = true;
         SetVisuals(true);
 
         if (IsOwner) {
-            networkTransform.Teleport(spawnPosition, Quaternion.identity, transform.localScale);
+            networkTransform.Teleport(spawnPosition, spawnRotation, transform.localScale);
         }
 
         GameEvents.OnPlayerRespawned?.Invoke(OwnerClientId);
