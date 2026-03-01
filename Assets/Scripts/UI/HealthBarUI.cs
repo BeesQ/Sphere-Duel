@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,13 @@ public class HealthBarUI : MonoBehaviour {
 
     [Tooltip("Fill Image of the client health slider (color changes green to red)")]
     [SerializeField] private Image clientFillImage;
+
+    [Header("Score")]
+    [Tooltip("Score text below host health bar (format: 0/3)")]
+    [SerializeField] private TextMeshProUGUI hostScoreText;
+
+    [Tooltip("Score text below client health bar (format: 0/3)")]
+    [SerializeField] private TextMeshProUGUI clientScoreText;
     #endregion
 
     #region Unity Callbacks
@@ -25,14 +33,17 @@ public class HealthBarUI : MonoBehaviour {
 
     private void Start() {
         InitializeSliders();
+        InitializeScores();
     }
 
     private void OnEnable() {
         GameEvents.OnPlayerHealthChanged += HandlePlayerHealthChanged;
+        GameEvents.OnScoreChanged += HandleScoreChanged;
     }
 
     private void OnDisable() {
         GameEvents.OnPlayerHealthChanged -= HandlePlayerHealthChanged;
+        GameEvents.OnScoreChanged -= HandleScoreChanged;
     }
     #endregion
 
@@ -48,6 +59,20 @@ public class HealthBarUI : MonoBehaviour {
         else {
             clientHealthSlider.value = currentHealth;
             clientFillImage.color = Color.Lerp(Color.red, Color.green, normalized);
+        }
+    }
+    #endregion
+
+    #region Score Updates
+    private void HandleScoreChanged(ulong clientId, int newScore) {
+        int scoreToWin = GameManager.Instance.ScoreToWin;
+        string scoreText = $"{newScore}/{scoreToWin}";
+
+        if (clientId == 0) {
+            hostScoreText.text = scoreText;
+        }
+        else {
+            clientScoreText.text = scoreText;
         }
     }
     #endregion
@@ -68,6 +93,12 @@ public class HealthBarUI : MonoBehaviour {
         clientHealthSlider.value = maxHealth;
         clientFillImage.color = Color.green;
     }
+
+    private void InitializeScores() {
+        int scoreToWin = GameManager.Instance.ScoreToWin;
+        hostScoreText.text = $"0/{scoreToWin}";
+        clientScoreText.text = $"0/{scoreToWin}";
+    }
     #endregion
 
     #region Validation
@@ -78,6 +109,8 @@ public class HealthBarUI : MonoBehaviour {
         if (hostFillImage == null) { Debug.LogError($"[{nameof(HealthBarUI)}] Host Fill Image is not assigned!", this); isValid = false; }
         if (clientHealthSlider == null) { Debug.LogError($"[{nameof(HealthBarUI)}] Client Health Slider is not assigned!", this); isValid = false; }
         if (clientFillImage == null) { Debug.LogError($"[{nameof(HealthBarUI)}] Client Fill Image is not assigned!", this); isValid = false; }
+        if (hostScoreText == null) { Debug.LogError($"[{nameof(HealthBarUI)}] Host Score Text is not assigned!", this); isValid = false; }
+        if (clientScoreText == null) { Debug.LogError($"[{nameof(HealthBarUI)}] Client Score Text is not assigned!", this); isValid = false; }
 
         if (!isValid) enabled = false;
     }

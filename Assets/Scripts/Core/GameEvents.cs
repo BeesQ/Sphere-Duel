@@ -8,6 +8,12 @@ public static class GameEvents {
     public static Action<ulong, float> OnPlayerHealthChanged;
     #endregion
 
+    #region Score
+    public static Action<ulong, int> OnScoreChanged;
+    public static Action<ulong> OnMatchWon;
+    public static Action OnMatchReset;
+    #endregion
+
     #region Game
     public static Action OnGameStarted;
     public static Action OnGameEnded;

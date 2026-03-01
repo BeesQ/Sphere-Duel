@@ -1,7 +1,10 @@
+using UnityEngine;
+
 public static class Const {
     #region Player
     public const float PlayerMoveSpeed = 5f;
     public const float PlayerMaxHealth = 5f;
+    public const float DefaultPlayerRadius = 0.5f;
     #endregion
 
     #region Projectile
@@ -12,8 +15,7 @@ public static class Const {
     #endregion
 
     #region Arena
-    public const float ArenaHalfWidth = 8f;
-    public const float ArenaHalfHeight = 4.5f;
+    public const float ArenaMaxHalfWidth = 8.89f;
     #endregion
 
     #region Spawn
@@ -33,5 +35,21 @@ public static class Const {
     #region Scenes
     public const string MenuSceneName = "MenuScene";
     public const string GameSceneName = "GameScene";
+    #endregion
+
+    #region UI Colors
+    public static readonly Color WinColor = new Color(
+        0.2f,
+        0.8f,
+        0.2f,
+        1f
+    );
+
+    public static readonly Color LoseColor = new Color(
+        0.8f,
+        0.2f,
+        0.2f,
+        1f
+    );
     #endregion
 }

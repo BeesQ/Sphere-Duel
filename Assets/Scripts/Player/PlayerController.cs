@@ -23,6 +23,8 @@ public class PlayerController : NetworkBehaviour {
 
     #region State
     private Vector2 moveInput;
+    private float arenaHalfWidth;
+    private float arenaHalfHeight;
     #endregion
 
     #region Unity Callbacks
@@ -32,6 +34,7 @@ public class PlayerController : NetworkBehaviour {
 
     private void Update() {
         if (!IsOwner || !playerHealth.IsAlive) return;
+        if (ScoreManager.Instance != null && ScoreManager.Instance.IsMatchOver) return;
 
         ReadInput();
         HandleRotation();
@@ -39,6 +42,7 @@ public class PlayerController : NetworkBehaviour {
 
     private void FixedUpdate() {
         if (!IsOwner || !playerHealth.IsAlive) return;
+        if (ScoreManager.Instance != null && ScoreManager.Instance.IsMatchOver) return;
 
         HandleMovement();
     }
@@ -50,6 +54,7 @@ public class PlayerController : NetworkBehaviour {
 
         mainCamera = Camera.main;
         visualSpriteRenderer.sortingOrder = 1;
+        CalculateArenaBounds();
         SetSpawnPosition();
     }
     #endregion
@@ -73,8 +78,8 @@ public class PlayerController : NetworkBehaviour {
     private void HandleMovement() {
         Vector2 newPosition = rb.position + moveInput * GameManager.Instance.PlayerMoveSpeed * Time.fixedDeltaTime;
 
-        newPosition.x = Mathf.Clamp(newPosition.x, -Const.ArenaHalfWidth, Const.ArenaHalfWidth);
-        newPosition.y = Mathf.Clamp(newPosition.y, -Const.ArenaHalfHeight, Const.ArenaHalfHeight);
+        newPosition.x = Mathf.Clamp(newPosition.x, -arenaHalfWidth, arenaHalfWidth);
+        newPosition.y = Mathf.Clamp(newPosition.y, -arenaHalfHeight, arenaHalfHeight);
 
         rb.MovePosition(newPosition);
     }
@@ -95,13 +100,25 @@ public class PlayerController : NetworkBehaviour {
     }
     #endregion
 
+    #region Arena Bounds
+    private void CalculateArenaBounds() {
+        if (mainCamera == null) mainCamera = Camera.main;
+
+        float playerRadius = visualSpriteRenderer != null
+            ? visualSpriteRenderer.bounds.extents.x
+            : Const.DefaultPlayerRadius;
+
+        float cameraHalfWidth = mainCamera.orthographicSize * mainCamera.aspect;
+        arenaHalfWidth = Mathf.Min(cameraHalfWidth, Const.ArenaMaxHalfWidth) - playerRadius;
+        arenaHalfHeight = mainCamera.orthographicSize - playerRadius;
+    }
+    #endregion
+
     #region Spawn
     private void SetSpawnPosition() {
-        bool isHost = OwnerClientId == 0;
-        float xPosition = isHost ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
-        Quaternion spawnRotation = isHost ? Quaternion.identity : Quaternion.Euler(0f, 0f, 180f);
-
-        networkTransform.Teleport(new Vector3(xPosition, 0f, 0f), spawnRotation, transform.localScale);
+        Vector3 spawnPosition = SpawnHelper.GetSpawnPosition(OwnerClientId);
+        Quaternion spawnRotation = SpawnHelper.GetSpawnRotation(OwnerClientId);
+        networkTransform.Teleport(spawnPosition, spawnRotation, transform.localScale);
     }
     #endregion
 

@@ -30,6 +30,7 @@ public class PlayerShooting : NetworkBehaviour {
         fireCooldownTimer -= Time.deltaTime;
 
         if (!playerHealth.IsAlive) return;
+        if (ScoreManager.Instance != null && ScoreManager.Instance.IsMatchOver) return;
 
         if (Mouse.current != null && Mouse.current.leftButton.isPressed && fireCooldownTimer <= 0f) {
             fireCooldownTimer = GameManager.Instance.FireCooldown;

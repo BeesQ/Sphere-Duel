@@ -59,8 +59,22 @@ public class PlayerHealth : NetworkBehaviour {
 
         if (currentHealth.Value <= 0f) {
             HandleDeathClientRpc();
-            StartCoroutine(RespawnCoroutine());
+
+            if (ScoreManager.Instance == null || !ScoreManager.Instance.IsMatchOver) {
+                StartCoroutine(RespawnCoroutine());
+            }
         }
+    }
+
+    public void ResetForNewMatch() {
+        if (!IsServer) return;
+
+        currentHealth.Value = GameManager.Instance.PlayerMaxHealth;
+
+        Vector3 spawnPosition = SpawnHelper.GetSpawnPosition(OwnerClientId);
+        Quaternion spawnRotation = SpawnHelper.GetSpawnRotation(OwnerClientId);
+
+        HandleRespawnClientRpc(spawnPosition, spawnRotation);
     }
     #endregion
 
@@ -83,10 +97,8 @@ public class PlayerHealth : NetworkBehaviour {
 
         currentHealth.Value = GameManager.Instance.PlayerMaxHealth;
 
-        bool isHost = OwnerClientId == 0;
-        float xPosition = isHost ? -Const.SpawnOffsetX : Const.SpawnOffsetX;
-        Vector3 spawnPosition = new Vector3(xPosition, 0f, 0f);
-        Quaternion spawnRotation = isHost ? Quaternion.identity : Quaternion.Euler(0f, 0f, 180f);
+        Vector3 spawnPosition = SpawnHelper.GetSpawnPosition(OwnerClientId);
+        Quaternion spawnRotation = SpawnHelper.GetSpawnRotation(OwnerClientId);
 
         HandleRespawnClientRpc(spawnPosition, spawnRotation);
     }
