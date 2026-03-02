@@ -51,7 +51,7 @@ public class WinScreenUI : MonoBehaviour {
         bool isLocalWinner = NetworkManager.Singleton.LocalClientId == winnerClientId;
 
         resultText.text = isLocalWinner ? "You Won!" : "You Lost!";
-        panelImage.color = isLocalWinner ? Const.WinColor : Const.LoseColor;
+        panelImage.color = isLocalWinner ? Const.PositiveGreenColor : Const.NegativeRedColor;
     }
 
     private void HandleMatchReset() {

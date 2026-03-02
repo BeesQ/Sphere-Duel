@@ -38,17 +38,17 @@ public static class Const {
     #endregion
 
     #region UI Colors
-    public static readonly Color WinColor = new Color(
-        0.2f,
-        0.8f,
-        0.2f,
+    public static readonly Color PositiveGreenColor = new Color(
+        0.4f,
+        0.89f,
+        0.36f,
         1f
     );
 
-    public static readonly Color LoseColor = new Color(
-        0.8f,
-        0.2f,
-        0.2f,
+    public static readonly Color NegativeRedColor = new Color(
+        0.89f,
+        0.4f,
+        0.36f,
         1f
     );
     #endregion

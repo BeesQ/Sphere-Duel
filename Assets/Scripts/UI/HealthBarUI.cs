@@ -50,15 +50,15 @@ public class HealthBarUI : MonoBehaviour {
     #region Health Updates
     private void HandlePlayerHealthChanged(ulong clientId, float currentHealth) {
         float maxHealth = GameManager.Instance.PlayerMaxHealth;
-        float normalized = Mathf.Clamp01(currentHealth / maxHealth);
+        float normalized = Mathf.Clamp01((currentHealth - 1f) / (maxHealth - 1f));
 
         if (clientId == 0) {
             hostHealthSlider.value = currentHealth;
-            hostFillImage.color = Color.Lerp(Color.red, Color.green, normalized);
+            hostFillImage.color = Color.Lerp(Const.NegativeRedColor, Const.PositiveGreenColor, normalized);
         }
         else {
             clientHealthSlider.value = currentHealth;
-            clientFillImage.color = Color.Lerp(Color.red, Color.green, normalized);
+            clientFillImage.color = Color.Lerp(Const.NegativeRedColor, Const.PositiveGreenColor, normalized);
         }
     }
     #endregion

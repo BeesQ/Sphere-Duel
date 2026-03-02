@@ -13,6 +13,9 @@ public class NetworkManagerUI : MonoBehaviour {
     [Tooltip("Button to join an existing game as client")]
     [SerializeField] private Button joinButton;
 
+    [Tooltip("Button to quit a game")]
+    [SerializeField] private Button quitButton;
+
     [Header("Input")]
     [Tooltip("Input field for the host IP address")]
     [SerializeField] private TMP_InputField ipInputField;
@@ -26,12 +29,13 @@ public class NetworkManagerUI : MonoBehaviour {
     private void Start() {
         hostButton.onClick.AddListener(HandleHostClicked);
         joinButton.onClick.AddListener(HandleJoinClicked);
+        quitButton.onClick.AddListener(Quit);
 
         NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnected;
 
         ipInputField.text = "127.0.0.1";
-        SetStatus("Enter IP then", "Host or Join.");
+        SetStatus("Enter IP then", "Host or Join");
     }
 
     private void OnDestroy() {
@@ -58,8 +62,8 @@ public class NetworkManagerUI : MonoBehaviour {
     private void HandleJoinClicked() {
         string ip = ipInputField.text.Trim();
 
-        if (string.IsNullOrEmpty(ip)) {
-            SetStatus("Please enter a valid IP address.");
+        if (string.IsNullOrWhiteSpace(ip)) {
+            SetStatus("Please enter a valid", "IP address");
             return;
         }
 
@@ -104,6 +108,10 @@ public class NetworkManagerUI : MonoBehaviour {
     #region Scene Management
     private void LoadGameScene() {
         NetworkManager.Singleton.SceneManager.LoadScene(Const.GameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
+    }
+
+    private void Quit() {
+        Application.Quit();
     }
     #endregion
 
