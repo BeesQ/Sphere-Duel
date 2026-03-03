@@ -69,7 +69,7 @@ First to **3 kills** wins the match.
 Assets/
 ├── Editor/            ForceMenuSceneEditor
 ├── Prefabs/           Player, Projectile
-    └── UI/
+│   └── UI/
 ├── Scenes/            GameScene, MenuScene
 └── Scripts/
     ├── Core/          Const, GameEvents, GameManager, ScoreManager, SpawnHelper
